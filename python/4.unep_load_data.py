@@ -110,6 +110,37 @@ for i in listVar:
 	j = getJsonFromApi('http://ede.grid.unep.ch/api/countries/variables/' + i['idV'])
 	parseJSON(myConn, cur, i['table'], j, i['idV'])
 
+# Création de la table data_last_year
+sql = """
+	CREATE TABLE public.data_last_year AS
+		SELECT
+			foo.iso_2
+			, c.iso_3
+			, c.name as country_name
+			, foo.id_variable
+			, v.category_id
+			, foo.year as last_year_value
+			, d.value
+		FROM (
+			SELECT
+				"iso-2" as iso_2
+				, id_variable
+				, max(year) as year
+			FROM
+				public.data_detail
+			GROUP BY
+				"iso-2"
+				, id_variable
+			) AS foo
+			JOIN data_detail d ON (d."iso-2" = foo.iso_2 AND d.id_variable = foo.id_variable AND d.year = foo.year) 
+			JOIN country c ON foo.iso_2 = c.iso_2
+			JOIN variable v ON foo.id_variable = v.id
+;"""
+cur.execute(sql)
+myConn.commit()
+
+
+
 ######################
 # Fin
 ######################

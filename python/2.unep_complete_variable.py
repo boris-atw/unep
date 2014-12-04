@@ -38,6 +38,7 @@ def changeStructTableVariable(conn, cur):
 	sql = 'ALTER TABLE variable ADD COLUMN units character varying(255);'
 	sql += 'ALTER TABLE variable ADD COLUMN definition text;'
 	sql += 'ALTER TABLE variable ADD COLUMN file_name character varying(255);'
+	sql += 'ALTER TABLE variable ADD COLUMN category_id integer;'
 	sql += 'ALTER TABLE variable ADD COLUMN unep_priority character varying(255);'
 	sql += 'ALTER TABLE variable ADD COLUMN source_url character varying(255);'
 	sql += 'ALTER TABLE variable ADD COLUMN source_organization character varying(255);'
