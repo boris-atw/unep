@@ -53,7 +53,8 @@ def getJsonFromApi(url):
 	headers  = {'content-type': 'application/json'}
 	r = requests.get(url, headers = headers)
 	if r.status_code != 200:
-		sys.exit('Erreur Appel URL => Code de retour : ' + str(r.status_code))
+		return False
+		#sys.exit('Erreur Appel URL => Code de retour : ' + str(r.status_code))
 	r.encoding = 'utf-8'
 	return r.json()
 
@@ -61,20 +62,69 @@ def getJsonFromApi(url):
 ######################
 # Parse JSON
 ######################
-def parseJSON(conn, cur, tName, j):
+def parseJSON(conn, cur, tName, j, idVar):
 	# Construction de la requete
 	for d in range(len(j)):
-		sql = 'INSERT INTO ' + tName + ' ('
-		for k in j[d].keys():
-			sql += k + ','
-		sql = sql[0:len(sql) - 1] + ') VALUES ('
-		for v in j[d].values():
-			if v is None:
+		row = j[d]
+		sql = 'UPDATE ' + tName + ' '
+		sql += 'SET '
+		
+		tKey = []
+		tVal = []
+		for k in row.keys():
+			tKey.append(k)
+		for v in row.values():
+			tVal.append(str(v))
+	
+		for i in range(len(tKey)):
+			# Nom du champ
+			sql += '"' + tKey[i] + '" = '
+			# Valeur du champ
+			if tVal[i] is None:
 				sql += 'null,'
 			else:
-				v = v.replace("'", "''")
-				sql += '\'' + v + '\','
-		sql = sql[0:len(sql) - 1] + ');'
+				if type(tVal[i]) == str:
+					v = tVal[i].replace("'", "''")
+					sql += '\'' + v + '\','
+				else:
+					sql += str(tVal[i]) + ','
+		sql = sql[0:len(sql) - 1] + ' WHERE id = ' + idVar + ';'
+
+		#print(sql)
 		cur.execute(sql)
 	conn.commit()
+	
+
+
+
+
+
+######################
+# Main
+######################
+
+# Ouverture handle BDD
+myConn = connexionBDD()
+cur = myConn.cursor()
+
+# Création des tables from scratch
+changeStructTableVariable(myConn, cur)
+
+# Chargement du détail des variables
+cur.execute('SELECT id FROM public.variable ORDER BY id;')
+listVar = []
+rows = cur.fetchall()
+for row in rows:
+	listVar.append({'idV' : str(row[0]), 'table' : 'public.variable'})
+
+for i in listVar:
+	print('Traitement Var : ' + i['idV'])
+	j = getJsonFromApi('http://ede.grid.unep.ch/api/variables/' + i['idV'])
+	if j:
+		parseJSON(myConn, cur, i['table'], j, i['idV'])
+
+######################
+# Fin
+######################
+sys.exit('Fin exécution sans erreur !')
 
