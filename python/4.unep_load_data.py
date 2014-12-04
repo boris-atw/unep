@@ -136,9 +136,17 @@ sql = """
 			JOIN country c ON foo.iso_2 = c.iso_2
 			JOIN variable v ON foo.id_variable = v.id
 ;"""
+
+sql += 'ALTER TABLE data_last_year ADD CONSTRAINT pk_data_last_year PRIMARY KEY(iso_2, id_variable);'
+sql += 'CREATE INDEX idx_data_last_year_category_id ON data_last_year (category_id ASC NULLS LAST);'
 cur.execute(sql)
 myConn.commit()
 
+
+# Update pour Antarctique
+cur.execute('UPDATE country SET iso_2 = \'AQ\', iso_3 = \'ATA\' WHERE name = \'Antarctic\';')
+cur.execute(sql)
+myConn.commit()
 
 
 ######################

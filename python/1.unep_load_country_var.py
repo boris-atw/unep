@@ -101,6 +101,10 @@ for i in listAction:
 	print('Effectué avec succès !\n')
 
 
+### Mise à jour pour le sud-soudan
+cur.execute('UPDATE country SET iso_2 = \'SS\' WHERE iso_2 = \'SD\' AND iso_3 = \'SSD\';')
+myConn.commit()
+
 
 ######################
 # Fin

@@ -1,0 +1,7 @@
+shp2pgsql -s 4326 -c -g geom -D -I -W "latin1" "d:\bho\adn\unep\world_border_dataset\TM_WORLD_BORDERS-0.3.shp" public.country_geom > d:\bho\adn\unep\world_border_dataset\world_border.sql
+
+>shp2pgsql -s 4326 -c -g geom -D -I -W "latin1" "d:\bho\adn\unep\world_border_dataset\TM_WORLD_BORDERS_SIMPL-0.3.shp" public.country_geom_simplify > d:\bho\adn\unep\world_border_dataset\world_border_simplify.sql
+
+psql -U postgres -h localhost -p 5463 -d unep < d:\bho\adn\unep\world_border_dataset\world_border.sql
+
+psql -U postgres -h localhost -p 5463 -d unep < d:\bho\adn\unep\world_border_dataset\world_border_simplify.sql
