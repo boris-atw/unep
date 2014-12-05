@@ -32,21 +32,6 @@ def connexionBDD():
 
 
 ######################
-# Ajout champ table public.variable
-######################
-def changeStructTableVariable(conn, cur):
-	sql = 'ALTER TABLE variable ADD COLUMN units character varying(255);'
-	sql += 'ALTER TABLE variable ADD COLUMN definition text;'
-	sql += 'ALTER TABLE variable ADD COLUMN file_name character varying(255);'
-	sql += 'ALTER TABLE variable ADD COLUMN category_id integer;'
-	sql += 'ALTER TABLE variable ADD COLUMN unep_priority character varying(255);'
-	sql += 'ALTER TABLE variable ADD COLUMN source_url character varying(255);'
-	sql += 'ALTER TABLE variable ADD COLUMN source_organization character varying(255);'
-	cur.execute(sql)
-	conn.commit()
-
-
-######################
 # Lecture URL
 ######################
 def getJsonFromApi(url):
@@ -108,9 +93,6 @@ def parseJSON(conn, cur, tName, j, idVar):
 myConn = connexionBDD()
 cur = myConn.cursor()
 
-# Création des tables from scratch
-changeStructTableVariable(myConn, cur)
-
 # Chargement du détail des variables
 cur.execute('SELECT id FROM public.variable ORDER BY id;')
 listVar = []
@@ -123,6 +105,7 @@ for i in listVar:
 	j = getJsonFromApi('http://ede.grid.unep.ch/api/variables/' + i['idV'])
 	if j:
 		parseJSON(myConn, cur, i['table'], j, i['idV'])
+
 
 ######################
 # Fin

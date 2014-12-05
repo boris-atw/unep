@@ -30,16 +30,6 @@ def connexionBDD():
 		sys.exit('Erreur Connexion base de données')
 	return myConn;
 
-######################
-# Création table country et variable
-######################
-def createTableFromScratch(conn, cur):
-	sql = 'DROP TABLE IF EXISTS public.variable;'
-	sql += 'DROP TABLE IF EXISTS public.country;'
-	sql += 'CREATE TABLE country(id integer NOT NULL,name character varying(120),iso_2 character varying(3),iso_3 character(3),un integer,region character varying(120),subregion character varying(120),developed integer,least_developed integer,oecd integer,subsahara integer,sids integer,arab integer,CONSTRAINT pk_country_id PRIMARY KEY (id)) WITH (OIDS=FALSE);'
-	sql += 'CREATE TABLE variable (id integer NOT NULL,name text,name_short character varying(255),time_period character varying(120),CONSTRAINT pk_variable_id PRIMARY KEY (id)) WITH (OIDS=FALSE);'
-	cur.execute(sql)
-	conn.commit()
 
 ######################
 # Lecture URL
@@ -58,9 +48,6 @@ def getJsonFromApi(url):
 # Parse JSON
 ######################
 def parseJSON(conn, cur, tName, j):
-	# Vide la table cible
-	cur.execute('TRUNCATE ' + tName + ' CASCADE;');
-
 	# Construction de la requete
 	for d in range(len(j)):
 		sql = 'INSERT INTO ' + tName + ' ('
@@ -88,9 +75,6 @@ def parseJSON(conn, cur, tName, j):
 myConn = connexionBDD()
 cur = myConn.cursor()
 
-# Création des tables from scratch
-createTableFromScratch(myConn, cur)
-
 # Chargement des tables de base (variable, country)
 listAction = [{'url' : 'http://ede.grid.unep.ch/api/variables', 'table' : 'public.variable'}, {'url' : 'http://ede.grid.unep.ch/api/countries', 'table' : 'public.country'}]
 
@@ -104,7 +88,6 @@ for i in listAction:
 ### Mise à jour pour le sud-soudan
 cur.execute('UPDATE country SET iso_2 = \'SS\' WHERE iso_2 = \'SD\' AND iso_3 = \'SSD\';')
 myConn.commit()
-
 
 ######################
 # Fin
