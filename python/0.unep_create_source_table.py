@@ -16,7 +16,13 @@
 import sys, psycopg2
 
 ### Connexion BDD
-myConnexionString = 'host=localhost port=5463 user=postgres dbname=unep password=postgres';
+text = open('f_bdd.txt', 'r')
+try:
+	myConnexionString = text.read()
+finally:
+	text.close()
+
+#myConnexionString = 'host=localhost port=5463 user=postgres dbname=unep password=postgres';
 try:
 	myConn = psycopg2.connect(myConnexionString)
 	cur = myConn.cursor()

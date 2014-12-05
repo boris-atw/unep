@@ -19,12 +19,19 @@
 import sys, psycopg2
 
 ### Connexion BDD
-myConnexionString = 'host=localhost port=5463 user=postgres dbname=unep password=postgres';
+text = open('f_bdd.txt', 'r')
+try:
+	myConnexionString = text.read()
+finally:
+	text.close()
+
+#myConnexionString = 'host=localhost port=5463 user=postgres dbname=unep password=postgres';
 try:
 	myConn = psycopg2.connect(myConnexionString)
 	cur = myConn.cursor()
 except Exception:
 	sys.exit('Erreur Connexion base de données')
+
 
 ### Insertion des catégories par recherche des différents labels
 sql = 'INSERT INTO public.variable_category (category_label) SELECT distinct unep_priority FROM public.variable ORDER BY unep_priority;'

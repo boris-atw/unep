@@ -24,11 +24,14 @@ import psycopg2
 # Connexion BDD
 ######################
 def connexionBDD():
-	myConnexionString = 'host=localhost port=5463 user=postgres dbname=unep password=postgres';
+	text = open('f_bdd.txt', 'r')
 	try:
+		myConnexionString = text.read()
 		myConn = psycopg2.connect(myConnexionString)
 	except Exception:
 		sys.exit('Erreur Connexion base de données')
+	finally:
+		text.close()
 	return myConn;
 
 
@@ -145,7 +148,6 @@ myConn.commit()
 
 # Update pour Antarctique
 cur.execute('UPDATE country SET iso_2 = \'AQ\', iso_3 = \'ATA\' WHERE name = \'Antarctic\';')
-cur.execute(sql)
 myConn.commit()
 
 
