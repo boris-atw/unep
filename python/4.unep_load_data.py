@@ -99,7 +99,7 @@ createTableDetail(myConn, cur)
 
 
 # Chargement du détail des valeurs (par variable et par country)
-cur.execute('SELECT id FROM public.variable ORDER BY id;')
+cur.execute('SELECT id FROM public.variable WHERE variable_usable = 1 ORDER BY id;')
 listVar = []
 rows = cur.fetchall()
 for row in rows:
