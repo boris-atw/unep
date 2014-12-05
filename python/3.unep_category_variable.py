@@ -38,8 +38,8 @@ sql += 'ALTER TABLE public.variable DROP COLUMN unep_priority CASCADE;'
 ### Suppression des valeurs de category nulle
 sql += 'UPDATE public.variable SET variable_usable = 0 WHERE category_id ISNULL;'
 sql += 'UPDATE public.variable SET variable_usable = 0 WHERE category_id = (SELECT category_id FROM public.variable_category WHERE category_label = \'None\');'
-sql += 'UPDATE public.variable SET variable_usable = 0 WHERE category_label ISNULL;'
-sql += 'UPDATE public.variable SET variable_usable = 0 WHERE category_label = \'None\';'
+sql += 'DELETE FROM public.variable_category WHERE category_label ISNULL;'
+sql += 'DELETE FROM public.variable_category WHERE category_label = \'None\';'
 
 ### Exécution de la requete et commit général
 cur.execute(sql)
